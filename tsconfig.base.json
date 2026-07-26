@@ -20,7 +20,8 @@
     "noUnusedParameters": true,
     "paths": {
       "@restaurant-os/database": ["./libs/backend/database/src/index.ts"],
-      "@restaurant-os/generated/prisma": ["generated/prisma/client.ts"]
+      "@restaurant-os/generated/prisma": ["generated/prisma/client.ts"],
+      "@restaurant-os/auth": ["./libs/backend/auth/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

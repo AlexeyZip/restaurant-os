@@ -1,0 +1,100 @@
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { PrismaService } from '@restaurant-os/database';
+
+@Injectable()
+export class AuthService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async register(
+    email: string,
+    password: string,
+  ): Promise<{ id: string; email: string }> {
+    const existing = await this.prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      throw new ConflictException('Email already in use');
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    const user = await this.prisma.user.create({
+      data: { email, passwordHash },
+    });
+
+    return { id: user.id, email: user.email };
+  }
+
+  async login(
+    email: string,
+    password: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const passwordValid = await bcrypt.compare(password, user.passwordHash);
+    if (!passwordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    return this.generateTokens(user.id, user.email);
+  }
+
+  async refresh(
+    token: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const stored = await this.prisma.refreshToken.findUnique({
+      where: { token },
+    });
+
+    if (!stored || stored.used || stored.expiresAt < new Date()) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+
+    await this.prisma.refreshToken.update({
+      where: { id: stored.id },
+      data: { used: true },
+    });
+
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: stored.userId },
+    });
+
+    return this.generateTokens(user.id, user.email);
+  }
+
+  async logout(token: string): Promise<void> {
+    await this.prisma.refreshToken.updateMany({
+      where: { token },
+      data: { used: true },
+    });
+  }
+
+  private async generateTokens(
+    userId: string,
+    email: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const payload = { sub: userId, email };
+
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+
+    await this.prisma.refreshToken.create({
+      data: { token: refreshToken, userId, expiresAt },
+    });
+
+    return { accessToken, refreshToken };
+  }
+}
