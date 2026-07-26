@@ -1,6 +1,8 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
@@ -16,7 +18,10 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "paths": {}
+    "paths": {
+      "@restaurant-os/database": ["./libs/backend/database/src/index.ts"],
+      "@restaurant-os/generated/prisma": ["generated/prisma/client.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
