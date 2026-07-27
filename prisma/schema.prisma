@@ -54,6 +54,31 @@ model RefreshToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model MenuCategory {
+  id         String   @id @default(cuid())
+  name       String   @unique
+  order      Int
+  available  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  dishes    Dish[]
+}
+
+model Dish {
+  id           String           @id @default(cuid())
+  name         String
+  description  String?
+  basicPrice   Int
+  imageUrl     String?
+  categoryId   String
+  availability DishAvailability @default(AVAILABLE)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  category     MenuCategory     @relation(fields: [categoryId], references: [id])
+}
+
 enum UserStatus {
   ACTIVE
   INACTIVE
@@ -65,4 +90,10 @@ enum RoleName {
   STAFF
   KITCHEN
   ADMIN
+}
+
+enum DishAvailability{
+  AVAILABLE
+  UNAVAILABLE
+  HIDDEN
 }
