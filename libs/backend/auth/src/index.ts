@@ -4,3 +4,5 @@ export * from './lib/auth.service';
 export * from './lib/jwt-auth.guard';
 export * from './lib/jwt.strategy';
 export * from './lib/interfaces/jwt-payload.interface';
+export * from './lib/decorators/roles.decorator';
+export * from './lib/roles.guard';

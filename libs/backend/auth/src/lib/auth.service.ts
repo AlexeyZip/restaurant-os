@@ -36,7 +36,16 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        roles: {
+          include: {
+            role: true,
+          },
+        },
+      },
+    });
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -46,7 +55,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return this.generateTokens(user.id, user.email);
+    const roleNames = user.roles.map((role) => role.role.name);
+
+    return this.generateTokens(user.id, user.email, roleNames);
   }
 
   async refresh(
@@ -67,9 +78,12 @@ export class AuthService {
 
     const user = await this.prisma.user.findUniqueOrThrow({
       where: { id: stored.userId },
+      include: { roles: { include: { role: true } } },
     });
 
-    return this.generateTokens(user.id, user.email);
+    const roleNames = user.roles.map((ur) => ur.role.name);
+
+    return this.generateTokens(user.id, user.email, roleNames);
   }
 
   async logout(token: string): Promise<void> {
@@ -82,8 +96,9 @@ export class AuthService {
   private async generateTokens(
     userId: string,
     email: string,
+    roles: string[],
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const payload = { sub: userId, email };
+    const payload = { sub: userId, email, roles };
 
     const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });

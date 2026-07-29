@@ -13,7 +13,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '@restaurant-os/auth';
+import { JwtAuthGuard, RolesGuard, Roles } from '@restaurant-os/auth';
 import { UpdateDishDto } from './dto/update-dish.dto';
 
 @Controller('menu')
@@ -25,19 +25,22 @@ export class MenuController {
     return this.menuService.getCategories();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('categories')
   createCategory(@Body() body: CreateCategoryDto) {
     return this.menuService.createCategory(body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch('categories/:id')
   updateCategory(@Param('id') id: string, @Body() body: UpdateCategoryDto) {
     return this.menuService.updateCategory(id, body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('categories/:id')
   deleteCategory(@Param('id') id: string) {
     return this.menuService.deleteCategory(id);
@@ -53,19 +56,22 @@ export class MenuController {
     return this.menuService.getDishById(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('dishes')
   createDish(@Body() body: CreateDishDto) {
     return this.menuService.createDish(body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch('dishes/:id')
   updateDish(@Param('id') id: string, @Body() body: UpdateDishDto) {
     return this.menuService.updateDish(id, body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('dishes/:id')
   deleteDish(@Param('id') id: string) {
     return this.menuService.deleteDish(id);
