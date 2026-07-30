@@ -22,7 +22,8 @@
       "@restaurant-os/database": ["./libs/backend/database/src/index.ts"],
       "@restaurant-os/generated/prisma": ["generated/prisma/client.ts"],
       "@restaurant-os/auth": ["./libs/backend/auth/src/index.ts"],
-      "@restaurant-os/menu": ["./libs/backend/menu/src/index.ts"]
+      "@restaurant-os/menu": ["./libs/backend/menu/src/index.ts"],
+      "@restaurant-os/orders": ["./libs/backend/orders/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
