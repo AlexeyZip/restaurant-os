@@ -3,9 +3,10 @@ import { OrderController } from './order.controller';
 import { DatabaseModule } from '@restaurant-os/database';
 import { AuthModule } from '@restaurant-os/auth';
 import { OrderService } from './orders.service';
+import { KitchenModule } from '@restaurant-os/kitchen';
 
 @Module({
-  imports: [DatabaseModule, AuthModule],
+  imports: [DatabaseModule, AuthModule, KitchenModule],
   providers: [OrderService],
   controllers: [OrderController],
 })

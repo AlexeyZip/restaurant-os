@@ -6,6 +6,7 @@ import { AuthModule } from '@restaurant-os/auth';
 import { MenuModule } from '@restaurant-os/menu';
 import { OrdersModule } from '@restaurant-os/orders';
 import { ReservationsModule } from '@restaurant-os/reservations';
+import { KitchenModule } from '@restaurant-os/kitchen';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ReservationsModule } from '@restaurant-os/reservations';
     MenuModule,
     OrdersModule,
     ReservationsModule,
+    KitchenModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -2,10 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@restaurant-os/database';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+import { KitchenGateway } from '@restaurant-os/kitchen';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly kitchenGateway: KitchenGateway,
+  ) {}
 
   async createOrder(userId: string, dto: CreateOrderDto) {
     let totalPrice = 0;
@@ -73,9 +77,15 @@ export class OrderService {
     if (!order) {
       throw new NotFoundException(`Order ${id} not found`);
     }
-    return this.prisma.order.update({
+    const updated = await this.prisma.order.update({
       where: { id },
       data: { ...dto },
     });
+    this.kitchenGateway.emitOrderStatusChanged({
+      id: updated.id,
+      status: updated.status,
+    });
+
+    return updated;
   }
 }

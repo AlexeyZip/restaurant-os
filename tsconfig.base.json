@@ -26,7 +26,8 @@
       "@restaurant-os/orders": ["./libs/backend/orders/src/index.ts"],
       "@restaurant-os/reservations": [
         "./libs/backend/reservations/src/index.ts"
-      ]
+      ],
+      "@restaurant-os/kitchen": ["./libs/backend/kitchen/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
