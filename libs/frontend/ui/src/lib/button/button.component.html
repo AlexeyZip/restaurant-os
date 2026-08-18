@@ -1,0 +1,13 @@
+<button
+  [type]="type()"
+  [disabled]="disabled() || loading()"
+  [color]="variant() === 'warn' ? 'warn' : variant() === 'secondary' ? '' : 'primary'"
+  mat-raised-button
+  (click)="clicked.emit()"
+>
+  @if (loading()) {
+    <mat-spinner diameter="20" />
+  } @else {
+    <ng-content />
+  }
+</button>

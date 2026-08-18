@@ -5,12 +5,16 @@
   "prefix": "app",
   "sourceRoot": "apps/customer-web/src",
   "tags": ["scope:customer", "type:app"],
+  "schematics": {
+    "@nx/angular:component": {
+      "style": "scss",
+      "changeDetection": "OnPush"
+    }
+  },
   "targets": {
     "build": {
       "executor": "@angular/build:application",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/customer-web",
@@ -23,9 +27,7 @@
             "input": "apps/customer-web/public"
           }
         ],
-        "styles": [
-          "apps/customer-web/src/styles.scss"
-        ]
+        "styles": ["apps/customer-web/src/styles.scss"]
       },
       "configurations": {
         "production": {
@@ -54,6 +56,9 @@
       "continuous": true,
       "executor": "@angular/build:dev-server",
       "defaultConfiguration": "development",
+      "options": {
+        "proxyConfig": "apps/customer-web/proxy.conf.json"
+      },
       "configurations": {
         "production": {
           "buildTarget": "customer-web:build:production"
