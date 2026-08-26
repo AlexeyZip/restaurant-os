@@ -65,6 +65,19 @@ export const AuthStore = signalStore(
         }
       }
     },
+    async refreshToken() {
+      try {
+        patchState(store, { loading: true, error: null });
+        const response = await authApi.refreshToken();
+        patchState(store, {
+          accessToken: response.accessToken,
+          loading: false,
+          error: null,
+        });
+      } catch (error) {
+        patchState(store, { loading: false });
+      }
+    },
     logout() {
       patchState(store, initialState);
     },

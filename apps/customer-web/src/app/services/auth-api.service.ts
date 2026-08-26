@@ -29,4 +29,10 @@ export class AuthApiService {
   logout(): Promise<void> {
     return firstValueFrom(this.http.post<void>(`${this.baseUrl}/logout`, {}));
   }
+
+  refreshToken(): Promise<LoginResponse> {
+    return firstValueFrom(
+      this.http.post<LoginResponse>(`${this.baseUrl}/refresh`, {}),
+    );
+  }
 }

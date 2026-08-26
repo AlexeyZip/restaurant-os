@@ -60,6 +60,10 @@ export class AuthService {
     return this.generateTokens(user.id, user.email, roleNames);
   }
 
+  // TODO(Phase 7 - Production hardening): single-use rotation has no grace
+  // period, so near-simultaneous refresh calls with the same token (e.g.
+  // rapid page reloads racing an in-flight request) will 401 the second
+  // call even though the first one already succeeded server-side.
   async refresh(
     token: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
