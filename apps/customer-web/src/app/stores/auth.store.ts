@@ -1,6 +1,7 @@
 import { signalStore, withState, withMethods, patchState } from '@ngrx/signals';
 import { inject } from '@angular/core';
 import { AuthApiService } from '../services/auth-api.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface AuthState {
   accessToken: string | null;
@@ -38,6 +39,30 @@ export const AuthStore = signalStore(
           loading: false,
           error: 'Incorrect email or password',
         });
+      }
+    },
+    async register(email: string, password: string) {
+      try {
+        patchState(store, { loading: true, error: null });
+        await authApi.register(email, password);
+        const response = await authApi.login(email, password);
+        patchState(store, {
+          accessToken: response.accessToken,
+          loading: false,
+          error: null,
+        });
+      } catch (error: unknown) {
+        if (error instanceof HttpErrorResponse) {
+          patchState(store, {
+            loading: false,
+            error: error.error.message,
+          });
+        } else {
+          patchState(store, {
+            loading: false,
+            error: 'Registration failed',
+          });
+        }
       }
     },
     logout() {

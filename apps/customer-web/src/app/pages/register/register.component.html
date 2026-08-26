@@ -1,1 +1,5 @@
-<p>register works!</p>
+<app-auth-form
+  submitLabel="Register"
+  [errorMessage]="error"
+  (formSubmit)="onSubmit($event)"
+/>

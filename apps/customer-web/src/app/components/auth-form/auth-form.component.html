@@ -1,0 +1,9 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <ui-input formControlName="email" label="Email" type="email" />
+  <ui-input formControlName="password" label="Password" type="password" />
+  <ui-button type="submit" variant="primary">{{ submitLabel() }}</ui-button>
+</form>
+
+@if (errorMessage()) {
+  <div class="error">{{ errorMessage() }}</div>
+}
