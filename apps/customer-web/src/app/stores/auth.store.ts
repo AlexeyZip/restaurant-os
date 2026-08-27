@@ -34,7 +34,7 @@ export const AuthStore = signalStore(
           loading: false,
           error: null,
         });
-      } catch (error) {
+      } catch {
         patchState(store, {
           loading: false,
           error: 'Incorrect email or password',
@@ -74,7 +74,7 @@ export const AuthStore = signalStore(
           loading: false,
           error: null,
         });
-      } catch (error) {
+      } catch {
         patchState(store, { loading: false });
       }
     },
