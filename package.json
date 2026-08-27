@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "dev:be": "npx nx serve api",
-    "dev:fe": "npx nx serve customer-web"
+    "dev:fe": "npx nx serve customer-web",
+    "db:seed": "npx prisma db seed"
   },
   "private": true,
   "devDependencies": {
@@ -54,6 +55,7 @@
     "prettier": "~3.6.2",
     "prisma": "^7.9.0",
     "tslib": "^2.3.0",
+    "tsx": "^4.23.12",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.58.0",
     "vite": "^8.0.0",
