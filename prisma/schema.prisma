@@ -71,6 +71,8 @@ model Dish {
   id           String           @id @default(cuid())
   name         String
   description  String?
+  /// Minor currency units (e.g. kopiykas), not whole UAH. See
+  /// @restaurant-os/shared/util's formatMoney/RESTAURANT_CURRENCY.
   basicPrice   Int
   imageUrl     String?
   categoryId   String
@@ -89,6 +91,7 @@ model Order {
   deliveryAddress String?
   tableNumber     Int?
   status          OrderStatus @default(CREATED)
+  /// Minor currency units, same convention as Dish.basicPrice.
   totalPrice       Int
   notes           String?
   cancelReason    String?
@@ -104,7 +107,7 @@ model OrderItem {
   orderId   String
   dishId    String
   dishName  String   // snapshot
-  unitPrice Int      // snapshot
+  unitPrice Int      // snapshot, minor currency units
   quantity  Int
 
   order     Order @relation(fields: [orderId], references: [id], onDelete: Cascade)

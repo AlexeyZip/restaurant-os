@@ -14,9 +14,18 @@ export class MenuService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getCategories() {
+    // Public menu contract: hidden categories are dropped entirely, and
+    // HIDDEN dishes (drafts) are excluded, but UNAVAILABLE ("stop list")
+    // dishes still come through so the frontend can show them as
+    // temporarily unavailable instead of making them disappear.
     return this.prisma.menuCategory.findMany({
+      where: { available: true },
       orderBy: { order: 'asc' },
-      include: { dishes: true },
+      include: {
+        dishes: {
+          where: { availability: { not: 'HIDDEN' } },
+        },
+      },
     });
   }
 
