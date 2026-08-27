@@ -1,0 +1,24 @@
+---
+description: Everything inside the project must be in English
+alwaysApply: true
+---
+
+# English only inside the project
+
+Everything that becomes part of this codebase must be written in English:
+
+- Code identifiers (variables, functions, classes, files, folders)
+- Code comments and JSDoc/TSDoc
+- Commit messages, branch names, PR titles/descriptions
+- Seed/fixture data (e.g. menu categories, dish names, user emails)
+- Config files, `README.md`, docs, `.mdc` rules
+- UI copy/labels in the apps (`customer-web`, `staff-web`), unless a task
+  explicitly asks for localized/multi-language content
+
+This applies regardless of what language the conversation with the user is
+happening in (chat responses to the user may be in another language per the
+user's own preference — that does not change this rule for anything written
+into the repo).
+
+If existing content violates this (leftover Cyrillic strings, mixed-language
+seed data, etc.), flag it and prefer fixing it over adding more of the same.

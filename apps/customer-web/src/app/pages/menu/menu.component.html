@@ -1,1 +1,42 @@
-<p>menu works!</p>
+@if (loading()) {
+  <div class="menu-state">
+    <p>Loading menu...</p>
+  </div>
+} @else if (error()) {
+  <div class="menu-state menu-state--error">
+    <p>{{ error() }}</p>
+    <ui-button variant="secondary" (clicked)="retry()">Retry</ui-button>
+  </div>
+} @else if (categories().length === 0) {
+  <div class="menu-state">
+    <p>The menu is empty right now. Please check back later.</p>
+  </div>
+} @else {
+  @for (category of categories(); track category.id) {
+    <section class="menu-category">
+      <h2 class="menu-category__title">{{ category.name }}</h2>
+
+      <div class="menu-category__grid">
+        @for (dish of category.dishes; track dish.id) {
+          <ui-card
+            class="dish-card"
+            [class.dish-card--unavailable]="dish.availability === 'UNAVAILABLE'"
+          >
+            <div class="dish-card__header">
+              <h3 class="dish-card__name">{{ dish.name }}</h3>
+              <span class="dish-card__price">{{ dish.basicPrice | money }}</span>
+            </div>
+
+            @if (dish.description) {
+              <p class="dish-card__description">{{ dish.description }}</p>
+            }
+
+            @if (dish.availability === 'UNAVAILABLE') {
+              <span class="dish-card__badge">Out of stock</span>
+            }
+          </ui-card>
+        }
+      </div>
+    </section>
+  }
+}
