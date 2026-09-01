@@ -24,7 +24,9 @@
           >
             <div class="dish-card__header">
               <h3 class="dish-card__name">{{ dish.name }}</h3>
-              <span class="dish-card__price">{{ dish.basicPrice | money }}</span>
+              <span class="dish-card__price">{{
+                dish.basicPrice | money
+              }}</span>
             </div>
 
             @if (dish.description) {
@@ -34,6 +36,13 @@
             @if (dish.availability === 'UNAVAILABLE') {
               <span class="dish-card__badge">Out of stock</span>
             }
+
+            <ui-button
+              variant="primary"
+              [disabled]="dish.availability === 'UNAVAILABLE'"
+              (clicked)="addDishToCart(dish.id)"
+              >Add to cart</ui-button
+            >
           </ui-card>
         }
       </div>

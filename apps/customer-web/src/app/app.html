@@ -8,27 +8,33 @@
           <a routerLink="/menu" routerLinkActive="is-active">Menu</a>
         </li>
         @if (isAuthenticated) {
-          <li>
-            <a routerLink="/orders" routerLinkActive="is-active">Orders</a>
-          </li>
-          <li>
-            <a routerLink="/reservations" routerLinkActive="is-active"
-              >Reservations</a
-            >
-          </li>
+        <li>
+          <a routerLink="/orders" routerLinkActive="is-active">Orders</a>
+        </li>
+        <li>
+          <a routerLink="/reservations" routerLinkActive="is-active"
+            >Reservations</a
+          >
+        </li>
         }
       </ul>
     </nav>
 
     <div class="app-header__auth">
       @if (isAuthenticated) {
-        <ui-button variant="secondary" (clicked)="onLogout()">Logout</ui-button>
+      <ui-button variant="secondary" (clicked)="onLogout()">Logout</ui-button>
       } @else {
-        <a routerLink="/login" routerLinkActive="is-active">Login</a>
-        <a routerLink="/register" routerLinkActive="is-active" class="app-header__cta"
-          >Register</a
-        >
+      <a routerLink="/login" routerLinkActive="is-active">Login</a>
+      <a
+        routerLink="/register"
+        routerLinkActive="is-active"
+        class="app-header__cta"
+        >Register</a
+      >
       }
+      <a routerLink="/cart">
+        <mat-icon [matBadge]="totalItems" fontIcon="shopping_cart"></mat-icon>
+      </a>
     </div>
   </div>
 </header>

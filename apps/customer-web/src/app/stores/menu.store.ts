@@ -1,5 +1,11 @@
-import { signalStore, withState, withMethods, patchState } from '@ngrx/signals';
-import { inject } from '@angular/core';
+import {
+  signalStore,
+  withState,
+  withMethods,
+  withComputed,
+  patchState,
+} from '@ngrx/signals';
+import { computed, inject } from '@angular/core';
 import { MenuCategory } from '../models/menu.model';
 import { MenuApiService } from '../services/menu-api.service';
 
@@ -37,5 +43,10 @@ export const MenuStore = signalStore(
         });
       }
     },
+  })),
+  withComputed((store) => ({
+    allDishes: computed(() =>
+      store.categories().flatMap((category) => category.dishes),
+    ),
   })),
 );

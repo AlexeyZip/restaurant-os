@@ -21,10 +21,9 @@ export const routes: Routes = [
       import('./pages/menu/menu.component').then((m) => m.MenuComponent),
   },
   {
-    path: 'orders',
-    canActivate: [authGuard],
+    path: 'cart',
     loadComponent: () =>
-      import('./pages/orders/orders.component').then((m) => m.OrdersComponent),
+      import('./pages/cart/cart.component').then((m) => m.CartComponent),
   },
   {
     path: 'reservations',
