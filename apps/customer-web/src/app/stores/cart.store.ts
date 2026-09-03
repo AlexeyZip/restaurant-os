@@ -7,9 +7,12 @@ import {
   withHooks,
 } from '@ngrx/signals';
 import { computed, effect, inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MenuStore } from './menu.store';
 import { Dish } from '../models/menu.model';
 import { CartItem, CartState } from '../models/cart.model';
+import { CreateOrderPayload } from '../models/order.model';
+import { OrdersApiService } from '../services/orders-api.service';
 
 const CART_STORAGE_KEY = 'cart';
 
@@ -40,7 +43,7 @@ export const CartStore = signalStore(
       });
     },
   }),
-  withMethods((store) => ({
+  withMethods((store, ordersApi = inject(OrdersApiService)) => ({
     addItem(dishId: string) {
       const items = store.items();
       const existing = items.find((item) => item.dishId === dishId);
@@ -79,11 +82,22 @@ export const CartStore = signalStore(
     clear() {
       patchState(store, { items: [] });
     },
-    // TODO: implement alongside CartComponent - build a CreateOrderPayload
-    // from `store.items()` + checkout form details, call
-    // OrdersApiService.createOrder, then clear() on success.
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    submitOrder() {},
+    async submitOrder(payload: CreateOrderPayload): Promise<void> {
+      patchState(store, { submitting: true, error: null });
+
+      try {
+        await ordersApi.createOrder(payload);
+        // Order created server-side - nothing left to keep in the cart.
+        patchState(store, { items: [], submitting: false });
+      } catch (error: unknown) {
+        const message =
+          error instanceof HttpErrorResponse &&
+          typeof error.error?.message === 'string'
+            ? error.error.message
+            : 'Failed to place order. Please try again.';
+        patchState(store, { submitting: false, error: message });
+      }
+    },
   })),
   withComputed((store, menuStore = inject(MenuStore)) => {
     const itemsWithDetails = computed(() => {

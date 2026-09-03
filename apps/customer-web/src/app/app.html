@@ -21,6 +21,9 @@
     </nav>
 
     <div class="app-header__auth">
+      <a routerLink="/cart">
+        <mat-icon [matBadge]="totalItems" fontIcon="shopping_cart"></mat-icon>
+      </a>
       @if (isAuthenticated) {
       <ui-button variant="secondary" (clicked)="onLogout()">Logout</ui-button>
       } @else {
@@ -32,9 +35,6 @@
         >Register</a
       >
       }
-      <a routerLink="/cart">
-        <mat-icon [matBadge]="totalItems" fontIcon="shopping_cart"></mat-icon>
-      </a>
     </div>
   </div>
 </header>

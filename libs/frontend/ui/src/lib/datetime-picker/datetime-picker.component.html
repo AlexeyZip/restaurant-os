@@ -1,0 +1,28 @@
+<div class="datetime-picker">
+  <mat-form-field class="datetime-picker__date">
+    <mat-label>{{ label() }} date</mat-label>
+    <input
+      matInput
+      [matDatepicker]="datePicker"
+      [min]="min()"
+      [disabled]="isDisabled()"
+      [value]="datePart()"
+      (dateChange)="onDateChange($event.value)"
+    />
+    <mat-datepicker-toggle matIconSuffix [for]="datePicker" />
+    <mat-datepicker #datePicker />
+  </mat-form-field>
+
+  <mat-form-field class="datetime-picker__time">
+    <mat-label>{{ label() }} time</mat-label>
+    <input
+      matInput
+      [matTimepicker]="timePicker"
+      [disabled]="isDisabled()"
+      [value]="timePart()"
+      (valueChange)="onTimeChange($event)"
+    />
+    <mat-timepicker-toggle matIconSuffix [for]="timePicker" />
+    <mat-timepicker #timePicker [interval]="interval()" />
+  </mat-form-field>
+</div>

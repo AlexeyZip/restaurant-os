@@ -14,6 +14,8 @@ export interface OrderDetails {
   tableNumber?: number;
   deliveryAddress?: string;
   notes?: string;
+  /** ISO 8601 string. Omit for "as soon as possible". */
+  scheduledFor?: string;
 }
 
 export interface CreateOrderItem {

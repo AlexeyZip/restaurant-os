@@ -48,7 +48,23 @@ export default [
       '**/*.cjs',
       '**/*.mjs',
     ],
-    // Override or add rules here
-    rules: {},
+    // Override or add rules here.
+    //
+    // Unused locals/params used to be enforced by the TS compiler
+    // (noUnusedLocals/noUnusedParameters in tsconfig.base.json), which made
+    // them hard build errors - annoying mid-feature (e.g. an `inject()` you
+    // added but haven't wired into the template yet). Enforcing it here
+    // instead keeps it a visible warning in the editor and in `nx lint`,
+    // without blocking `nx serve`/`nx build` while you're still working.
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
   },
 ];

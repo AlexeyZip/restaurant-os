@@ -1,3 +1,15 @@
 .full-width {
   width: 100%;
 }
+
+// Mirrors Material's own mat-error styling (same font-size/color token it
+// uses internally) without depending on mat-form-field's internal
+// error/hint slot switching - see the comment next to its usage in the
+// template for why we can't just put a real <mat-error> in there.
+.ui-input-error {
+  margin: 0;
+  padding: 0 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--mat-form-field-error-text-color, #b3261e);
+}

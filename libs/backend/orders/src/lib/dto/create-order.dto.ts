@@ -4,6 +4,8 @@ import {
   IsInt,
   IsOptional,
   IsEnum,
+  IsDate,
+  MinDate,
   ValidateNested,
   IsArray,
 } from 'class-validator';
@@ -24,6 +26,14 @@ export class CreateOrderDto {
   @IsInt()
   @IsOptional()
   tableNumber?: number;
+  /** Omit for "as soon as possible" - the default for most orders. */
+  @IsDate()
+  @Type(() => Date)
+  @MinDate(() => new Date(), {
+    message: 'scheduledFor must be a time in the future',
+  })
+  @IsOptional()
+  scheduledFor?: Date;
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateOrderItemDto)

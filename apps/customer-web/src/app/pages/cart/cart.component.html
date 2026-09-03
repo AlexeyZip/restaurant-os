@@ -1,1 +1,111 @@
-<p>cart works!</p>
+@if (isEmpty()) {
+  <div class="cart-state">
+    <p>Your cart is empty. Please add some items to your cart.</p>
+    <a routerLink="/menu">Back to menu</a>
+  </div>
+} @else {
+  <div class="cart-page">
+    <section class="cart-items">
+      <h2 class="section-title">Selected Items</h2>
+
+      <ui-card>
+        @for (item of itemsWithDetails(); track item.dishId) {
+          <div class="cart-item">
+            <div class="cart-item__info">
+              <span class="cart-item__name">{{ item.dish.name }}</span>
+              <span class="cart-item__unit-price"
+                >{{ item.dish.basicPrice | money }} each</span
+              >
+            </div>
+
+            <div class="cart-item__quantity">
+              <button
+                type="button"
+                class="quantity-btn"
+                aria-label="Decrease quantity"
+                (click)="decrementQuantity(item.dishId, item.quantity)"
+              >
+                −
+              </button>
+              <span class="cart-item__quantity-value">{{ item.quantity }}</span>
+              <button
+                type="button"
+                class="quantity-btn"
+                aria-label="Increase quantity"
+                (click)="incrementQuantity(item.dishId, item.quantity)"
+              >
+                +
+              </button>
+            </div>
+
+            <span class="cart-item__line-total">
+              {{ item.dish.basicPrice * item.quantity | money }}
+            </span>
+            <div class="delete-button">
+              <ui-button
+                type="button"
+                variant="secondary"
+                (click)="removeItem(item.dishId)"
+              >
+                <mat-icon fontIcon="delete" color="red"></mat-icon>
+              </ui-button>
+            </div>
+          </div>
+        }
+
+        <div class="cart-summary">
+          <span>Total</span>
+          <span class="cart-summary__price">{{ totalPrice() | money }}</span>
+        </div>
+      </ui-card>
+    </section>
+
+    <section class="checkout">
+      <h2 class="section-title">Checkout</h2>
+
+      <ui-card>
+        <form class="checkout-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+          <label class="checkout-form__field">
+            <span class="checkout-form__label">Order type</span>
+            <select class="checkout-form__select" formControlName="orderType">
+              <option value="DINE_IN">Dine in</option>
+              <option value="DELIVERY">Delivery</option>
+              <option value="TAKEAWAY">Takeaway</option>
+            </select>
+          </label>
+
+          <ui-input
+            label="Table Number"
+            type="number"
+            formControlName="tableNumber"
+          />
+          <ui-input
+            label="Delivery Address"
+            type="text"
+            formControlName="deliveryAddress"
+          />
+          <ui-input label="Notes" type="text" formControlName="notes" />
+
+          <div class="checkout-form__field">
+            <ui-datetime-picker
+              label="Pickup"
+              [min]="minScheduledDate"
+              formControlName="scheduledFor"
+            />
+            <span class="checkout-form__hint"
+              >Optional — leave empty to prepare as soon as possible</span
+            >
+          </div>
+
+          <ui-button type="submit" variant="primary" [loading]="submitting()"
+            >Place order</ui-button
+          >
+
+          @if (error()) {
+            <p class="checkout-form__error">{{ error() }}</p>
+          }
+        </form>
+      </ui-card>
+    </section>
+  </div>
+}

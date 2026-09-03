@@ -34,6 +34,7 @@ export class OrderService {
         tableNumber: dto.tableNumber,
         deliveryAddress: dto.deliveryAddress,
         notes: dto.notes,
+        scheduledFor: dto.scheduledFor,
         totalPrice,
         items: {
           create: itemsData,

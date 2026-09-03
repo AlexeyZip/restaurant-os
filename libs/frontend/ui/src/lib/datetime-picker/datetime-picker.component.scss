@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+.datetime-picker {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.datetime-picker__date {
+  flex: 2 1 180px;
+}
+
+.datetime-picker__time {
+  flex: 1 1 120px;
+}

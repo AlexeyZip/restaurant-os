@@ -94,6 +94,9 @@ model Order {
   /// Minor currency units, same convention as Dish.basicPrice.
   totalPrice       Int
   notes           String?
+  /// Optional future pickup/delivery time chosen by the customer. Null
+  /// means "as soon as possible" (the default for most orders).
+  scheduledFor    DateTime?
   cancelReason    String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
