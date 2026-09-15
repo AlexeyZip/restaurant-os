@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { randomUUID } from 'node:crypto';
 import { PrismaService } from '@restaurant-os/database';
 
 @Injectable()
@@ -63,21 +64,32 @@ export class AuthService {
   // TODO(Phase 7 - Production hardening): single-use rotation has no grace
   // period, so near-simultaneous refresh calls with the same token (e.g.
   // rapid page reloads racing an in-flight request) will 401 the second
-  // call even though the first one already succeeded server-side.
+  // call even though the first one already succeeded server-side. That's
+  // an accepted UX rough edge for now - see the comment below for the
+  // actual correctness bug this used to have (crash, not just a 401).
   async refresh(
     token: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const stored = await this.prisma.refreshToken.findUnique({
-      where: { token },
+    // Atomic claim-and-invalidate: the `used: false` check lives in the
+    // WHERE clause itself, not in a separate read beforehand. Postgres
+    // guarantees only one concurrent UPDATE can match a given row, so if
+    // two requests race on the same token, exactly one of them gets
+    // count === 1 (the "winner") and the other gets count === 0 (the
+    // "loser", which correctly 401s below instead of also generating a
+    // token pair - see the previous read-then-update version, which had
+    // a TOCTOU window that let both requests through and then crashed on
+    // a duplicate refresh-token INSERT, not just a spurious 401).
+    const claim = await this.prisma.refreshToken.updateMany({
+      where: { token, used: false, expiresAt: { gt: new Date() } },
+      data: { used: true },
     });
 
-    if (!stored || stored.used || stored.expiresAt < new Date()) {
+    if (claim.count === 0) {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
-    await this.prisma.refreshToken.update({
-      where: { id: stored.id },
-      data: { used: true },
+    const stored = await this.prisma.refreshToken.findUniqueOrThrow({
+      where: { token },
     });
 
     const user = await this.prisma.user.findUniqueOrThrow({
@@ -104,8 +116,21 @@ export class AuthService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const payload = { sub: userId, email, roles };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
+    // jwtid: without it, two tokens signed for the same user within the
+    // same second would be byte-for-byte identical (JWT signing is
+    // deterministic given the same payload+iat+secret) - which is exactly
+    // what caused the duplicate-key crash this method used to have. A
+    // random jti makes every signature unique regardless of timing, on
+    // top of the atomic claim in refresh() above (defense in depth: two
+    // independent fixes for the same underlying race).
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: '15m',
+      jwtid: randomUUID(),
+    });
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: '30d',
+      jwtid: randomUUID(),
+    });
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);

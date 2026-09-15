@@ -53,6 +53,9 @@ export class OrderService {
       include: {
         items: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 

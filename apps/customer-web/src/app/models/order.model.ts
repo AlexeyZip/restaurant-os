@@ -40,4 +40,6 @@ export interface Order extends OrderDetails {
   status: OrderStatus;
   totalPrice: number;
   items: OrderItem[];
+  cancelReason?: string;
+  createdAt: string;
 }

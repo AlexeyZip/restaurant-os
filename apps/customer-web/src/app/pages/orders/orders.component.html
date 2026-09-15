@@ -1,1 +1,100 @@
-<p>orders works!</p>
+@if (loading()) {
+  <div class="orders-state">
+    <p>Loading your orders...</p>
+  </div>
+} @else if (error()) {
+  <div class="orders-state orders-state--error">
+    <p>{{ error() }}</p>
+    <p>Something went wrong. Please refresh the page or try again later.</p>
+  </div>
+} @else if (orders().length === 0) {
+  <div class="orders-state">
+    <p>
+      You don't have any orders yet. Please place an order to see your orders
+      here.
+    </p>
+  </div>
+} @else {
+  <div class="orders-list">
+    @for (order of orders(); track order.id) {
+      <ui-card class="order-card">
+        <div class="order-card__header">
+          <div class="order-card__heading">
+            <span class="order-card__type">{{
+              order.orderType === 'DELIVERY' ? 'Delivery' : 'Takeaway'
+            }}</span>
+            <span class="order-card__date">{{
+              order.createdAt | date: 'medium'
+            }}</span>
+          </div>
+
+          <span
+            class="status-badge"
+            [class]="'status-badge--' + order.status.toLowerCase()"
+          >
+            @switch (order.status) {
+              @case ('CREATED') {
+                Placed
+              }
+              @case ('CONFIRMED') {
+                Confirmed
+              }
+              @case ('IN_PROGRESS') {
+                Preparing
+              }
+              @case ('READY') {
+                Ready
+              }
+              @case ('OUT_FOR_DELIVERY') {
+                Out for delivery
+              }
+              @case ('COMPLETED') {
+                Completed
+              }
+              @case ('CANCELLED') {
+                Cancelled
+              }
+            }
+          </span>
+        </div>
+
+        <ul class="order-card__items">
+          @for (item of order.items; track item.id) {
+            <li class="order-card__item">
+              <span>{{ item.quantity }}× {{ item.dishName }}</span>
+              <span>{{ item.unitPrice * item.quantity | money }}</span>
+            </li>
+          }
+        </ul>
+
+        <div class="order-card__details">
+          @if (order.deliveryAddress) {
+            <p class="order-card__detail">
+              Deliver to: {{ order.deliveryAddress }}
+            </p>
+          }
+          @if (order.scheduledFor) {
+            <p class="order-card__detail">
+              Scheduled for: {{ order.scheduledFor | date: 'medium' }}
+            </p>
+          } @else {
+            <p class="order-card__detail">As soon as possible</p>
+          }
+          @if (order.notes) {
+            <p class="order-card__detail">Notes: {{ order.notes }}</p>
+          }
+          @if (order.status === 'CANCELLED' && order.cancelReason) {
+            <p class="order-card__detail order-card__detail--error">
+              Cancelled: {{ order.cancelReason }}
+            </p>
+          }
+        </div>
+
+        <div class="order-card__footer">
+          <span>Total</span>
+          <span class="order-card__total">{{ order.totalPrice | money }}</span>
+        </div>
+      </ui-card>
+    }
+  </div>
+}
