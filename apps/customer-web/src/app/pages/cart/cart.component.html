@@ -68,17 +68,11 @@
           <label class="checkout-form__field">
             <span class="checkout-form__label">Order type</span>
             <select class="checkout-form__select" formControlName="orderType">
-              <option value="DINE_IN">Dine in</option>
               <option value="DELIVERY">Delivery</option>
               <option value="TAKEAWAY">Takeaway</option>
             </select>
           </label>
 
-          <ui-input
-            label="Table Number"
-            type="number"
-            formControlName="tableNumber"
-          />
           <ui-input
             label="Delivery Address"
             type="text"
@@ -87,14 +81,17 @@
           <ui-input label="Notes" type="text" formControlName="notes" />
 
           <div class="checkout-form__field">
-            <ui-datetime-picker
-              label="Pickup"
-              [min]="minScheduledDate"
-              formControlName="scheduledFor"
-            />
-            <span class="checkout-form__hint"
-              >Optional — leave empty to prepare as soon as possible</span
+            <mat-checkbox formControlName="asap"
+              >As soon as possible</mat-checkbox
             >
+
+            @if (!form.controls.asap.value) {
+              <ui-datetime-picker
+                label="Pickup"
+                [min]="minScheduledDate"
+                formControlName="scheduledFor"
+              />
+            }
           </div>
 
           <ui-button type="submit" variant="primary" [loading]="submitting()"

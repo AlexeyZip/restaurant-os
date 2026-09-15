@@ -1,7 +1,6 @@
 import {
   IsString,
   IsNotEmpty,
-  IsInt,
   IsOptional,
   IsEnum,
   IsDate,
@@ -23,9 +22,6 @@ export class CreateOrderDto {
   @IsString()
   @IsOptional()
   notes?: string;
-  @IsInt()
-  @IsOptional()
-  tableNumber?: number;
   /** Omit for "as soon as possible" - the default for most orders. */
   @IsDate()
   @Type(() => Date)

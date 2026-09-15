@@ -89,7 +89,6 @@ model Order {
   orderType       OrderType
   userId          String
   deliveryAddress String?
-  tableNumber     Int?
   status          OrderStatus @default(CREATED)
   /// Minor currency units, same convention as Dish.basicPrice.
   totalPrice       Int
@@ -165,7 +164,6 @@ enum DishAvailability{
 }
 
 enum OrderType {
-  DINE_IN
   DELIVERY
   TAKEAWAY
 }

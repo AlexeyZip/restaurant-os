@@ -12,6 +12,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, FormsModule, NgControl } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { getControlErrorMessage } from '../forms/control-error-message';
 
 @Component({
   selector: 'ui-input',
@@ -63,20 +64,10 @@ export class InputComponent implements ControlValueAccessor {
     return !!control && control.invalid && (control.touched || control.dirty);
   });
 
-  protected readonly errorMessage = computed(() => {
-    this.formStateVersion();
-    const errors = this.ngControl?.control?.errors;
-    if (!errors) {
-      return '';
-    }
-    if (errors['required']) {
-      return 'This field is required.';
-    }
-    if (errors['email']) {
-      return 'Enter a valid email address.';
-    }
-    return 'Invalid value.';
-  });
+       protected readonly errorMessage = computed(() => {
+         this.formStateVersion();
+         return getControlErrorMessage(this.ngControl?.control?.errors);
+       });
 
   onChange: (value: string) => void = () => {};
   onTouched: () => void = () => {};

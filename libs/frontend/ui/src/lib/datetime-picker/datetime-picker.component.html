@@ -1,5 +1,5 @@
 <div class="datetime-picker">
-  <mat-form-field class="datetime-picker__date">
+  <mat-form-field class="datetime-picker__date" subscriptSizing="dynamic">
     <mat-label>{{ label() }} date</mat-label>
     <input
       matInput
@@ -13,7 +13,7 @@
     <mat-datepicker #datePicker />
   </mat-form-field>
 
-  <mat-form-field class="datetime-picker__time">
+  <mat-form-field class="datetime-picker__time" subscriptSizing="dynamic">
     <mat-label>{{ label() }} time</mat-label>
     <input
       matInput
@@ -26,3 +26,9 @@
     <mat-timepicker #timePicker [interval]="interval()" />
   </mat-form-field>
 </div>
+<!-- Deliberately outside both <mat-form-field>s - see the class doc comment
+     in datetime-picker.component.ts for why. One shared message below both
+     fields, since date+time together back a single logical FormControl. -->
+@if (showError()) {
+  <p class="ui-datetime-picker-error">{{ errorMessage() }}</p>
+}

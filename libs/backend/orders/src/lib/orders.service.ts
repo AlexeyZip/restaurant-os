@@ -31,7 +31,6 @@ export class OrderService {
       data: {
         userId,
         orderType: dto.orderType,
-        tableNumber: dto.tableNumber,
         deliveryAddress: dto.deliveryAddress,
         notes: dto.notes,
         scheduledFor: dto.scheduledFor,

@@ -1,4 +1,4 @@
-export type OrderType = 'DINE_IN' | 'DELIVERY' | 'TAKEAWAY';
+export type OrderType = 'DELIVERY' | 'TAKEAWAY';
 
 export type OrderStatus =
   | 'CREATED'
@@ -11,7 +11,6 @@ export type OrderStatus =
 
 export interface OrderDetails {
   orderType: OrderType;
-  tableNumber?: number;
   deliveryAddress?: string;
   notes?: string;
   /** ISO 8601 string. Omit for "as soon as possible". */

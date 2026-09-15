@@ -19,6 +19,7 @@ import { MenuStore } from '../../stores/menu.store';
 import { AuthStore } from '../../stores/auth.store';
 import { CreateOrderPayload, OrderType } from '../../models/order.model';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-cart',
@@ -31,6 +32,7 @@ import { MatIconModule } from '@angular/material/icon';
     DatetimePickerComponent,
     RouterLink,
     MatIconModule,
+    MatCheckboxModule,
   ],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss',
@@ -47,14 +49,20 @@ export class CartComponent {
   isEmpty = computed(() => this.itemsWithDetails().length === 0);
 
   form = new FormGroup({
-    orderType: new FormControl<OrderType>('DINE_IN', { nonNullable: true }),
-    tableNumber: new FormControl('', [Validators.required]),
+    // Dine-in used to live here too, but "I'm sitting at a table" is a
+    // Reservation concern (a real Table, checked for overlaps), not an
+    // Order concern - Order is only about food that gets prepared and
+    // handed off, either delivered or picked up.
+    orderType: new FormControl<OrderType>('TAKEAWAY', { nonNullable: true }),
     deliveryAddress: new FormControl({ value: '', disabled: true }),
     notes: new FormControl(''),
-    // Optional - null means "as soon as possible", the default for most
-    // orders. min prevents picking a moment that's already in the past
-    // (the backend also re-validates this - never trust the client alone).
-    scheduledFor: new FormControl<Date | null>(null),
+    // Checked by default so the common case ("just make it whenever") stays
+    // frictionless. Unchecking it is what makes scheduledFor required - see
+    // applyAsapRules().
+    asap: new FormControl<boolean>(true, { nonNullable: true }),
+    // min prevents picking a moment that's already in the past (the backend
+    // also re-validates this - never trust the client alone).
+    scheduledFor: new FormControl<Date | null>({ value: null, disabled: true }),
   });
 
   readonly minScheduledDate = new Date();
@@ -63,41 +71,47 @@ export class CartComponent {
 
   constructor() {
     this.menuStore.loadCategories();
+
     this.form.controls.orderType.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe((orderType) => this.applyOrderTypeRules(orderType));
-
     this.applyOrderTypeRules(this.form.controls.orderType.value);
+
+    this.form.controls.asap.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((asap) => this.applyAsapRules(asap));
+    this.applyAsapRules(this.form.controls.asap.value);
   }
 
   private applyOrderTypeRules(orderType: OrderType) {
-    const tableNumber = this.form.controls.tableNumber;
     const deliveryAddress = this.form.controls.deliveryAddress;
 
-    if (orderType === 'DINE_IN') {
-      tableNumber.enable({ emitEvent: false });
-      tableNumber.setValidators(Validators.required);
-      deliveryAddress.disable({ emitEvent: false });
-      deliveryAddress.reset('', { emitEvent: false });
-      deliveryAddress.clearValidators();
-    } else if (orderType === 'DELIVERY') {
-      tableNumber.disable({ emitEvent: false });
-      tableNumber.reset('', { emitEvent: false });
-      tableNumber.clearValidators();
+    if (orderType === 'DELIVERY') {
       deliveryAddress.enable({ emitEvent: false });
       deliveryAddress.setValidators(Validators.required);
     } else {
-      // TAKEAWAY - picked up at the counter, neither field applies.
-      tableNumber.disable({ emitEvent: false });
-      tableNumber.reset('', { emitEvent: false });
-      tableNumber.clearValidators();
+      // TAKEAWAY - picked up at the counter, doesn't need an address.
       deliveryAddress.disable({ emitEvent: false });
       deliveryAddress.reset('', { emitEvent: false });
       deliveryAddress.clearValidators();
     }
 
-    tableNumber.updateValueAndValidity({ emitEvent: false });
     deliveryAddress.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private applyAsapRules(asap: boolean) {
+    const scheduledFor = this.form.controls.scheduledFor;
+
+    if (asap) {
+      scheduledFor.disable({ emitEvent: false });
+      scheduledFor.reset(null, { emitEvent: false });
+      scheduledFor.clearValidators();
+    } else {
+      scheduledFor.enable({ emitEvent: false });
+      scheduledFor.setValidators(Validators.required);
+    }
+
+    scheduledFor.updateValueAndValidity({ emitEvent: false });
   }
 
   async onSubmit() {
@@ -116,12 +130,14 @@ export class CartComponent {
       return;
     }
 
-    const { orderType, tableNumber, deliveryAddress, notes, scheduledFor } =
+    // form.value only includes ENABLED controls - deliveryAddress is
+    // omitted entirely for TAKEAWAY, scheduledFor is omitted entirely when
+    // asap is checked. That's exactly the shape the backend expects.
+    const { orderType, deliveryAddress, notes, scheduledFor } =
       this.form.value;
 
     const payload: CreateOrderPayload = {
       orderType: orderType as OrderType,
-      tableNumber: tableNumber ? Number(tableNumber) : undefined,
       deliveryAddress: deliveryAddress || undefined,
       notes: notes || undefined,
       // Date -> ISO string: HttpClient JSON-serializes the payload, and a

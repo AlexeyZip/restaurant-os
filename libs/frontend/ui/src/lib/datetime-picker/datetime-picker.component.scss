@@ -15,3 +15,13 @@
 .datetime-picker__time {
   flex: 1 1 120px;
 }
+
+// Mirrors ui-input's .ui-input-error - same reasoning, see that
+// component's template comment for why this can't just be a <mat-error>.
+.ui-datetime-picker-error {
+  margin: 0;
+  padding: 0 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--mat-form-field-error-text-color, #b3261e);
+}
