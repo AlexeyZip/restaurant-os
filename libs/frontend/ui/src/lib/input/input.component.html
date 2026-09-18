@@ -14,16 +14,11 @@
   }
 </mat-form-field>
 <!--
-  Deliberately outside <mat-form-field>: MatFormField only ever projects ONE
-  of its <mat-error>/<mat-hint> content children, picked by its own
-  `_control.errorState` (see _getDisplayedMessages() in Material's source).
-  `_control` is the MatInput directive on the native <input> above, and since
-  our real formControlName lives on <ui-input> (the wrapper), not on that
-  native <input>, MatInput never sees a NgControl and its errorState is
-  permanently false - so a <mat-error> inside <mat-form-field> would never
-  actually be inserted into the DOM, no matter what our own showError()
-  says. Rendering our own element here sidesteps that internal switch
-  entirely and stays under our full control.
+  Deliberately outside <mat-form-field>: it only projects <mat-error> when
+  its internal MatInput directive has its own NgControl with errorState=true.
+  Our formControlName lives on <ui-input> (the wrapper), not the native
+  <input>, so that never happens - a real <mat-error> here would silently
+  never render. Rendering our own element sidesteps that entirely.
 -->
 @if (showError()) {
   <p class="ui-input-error">{{ errorMessage() }}</p>

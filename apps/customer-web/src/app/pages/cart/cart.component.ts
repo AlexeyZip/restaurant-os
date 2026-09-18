@@ -49,19 +49,12 @@ export class CartComponent {
   isEmpty = computed(() => this.itemsWithDetails().length === 0);
 
   form = new FormGroup({
-    // Dine-in used to live here too, but "I'm sitting at a table" is a
-    // Reservation concern (a real Table, checked for overlaps), not an
-    // Order concern - Order is only about food that gets prepared and
-    // handed off, either delivered or picked up.
+    // No dine-in option: booking a table is a Reservation concern, not Order.
     orderType: new FormControl<OrderType>('TAKEAWAY', { nonNullable: true }),
     deliveryAddress: new FormControl({ value: '', disabled: true }),
     notes: new FormControl(''),
-    // Checked by default so the common case ("just make it whenever") stays
-    // frictionless. Unchecking it is what makes scheduledFor required - see
-    // applyAsapRules().
+    // Unchecking this is what makes scheduledFor required - see applyAsapRules().
     asap: new FormControl<boolean>(true, { nonNullable: true }),
-    // min prevents picking a moment that's already in the past (the backend
-    // also re-validates this - never trust the client alone).
     scheduledFor: new FormControl<Date | null>({ value: null, disabled: true }),
   });
 
@@ -90,7 +83,6 @@ export class CartComponent {
       deliveryAddress.enable({ emitEvent: false });
       deliveryAddress.setValidators(Validators.required);
     } else {
-      // TAKEAWAY - picked up at the counter, doesn't need an address.
       deliveryAddress.disable({ emitEvent: false });
       deliveryAddress.reset('', { emitEvent: false });
       deliveryAddress.clearValidators();
@@ -120,11 +112,8 @@ export class CartComponent {
       return;
     }
 
-    // The cart itself is browsable without being logged in (that's a
-    // deliberate choice - see /cart route with no authGuard), but the
-    // backend's POST /orders requires a JWT either way. So the auth check
-    // happens right here, at the moment of actually placing the order, not
-    // when landing on the page.
+    // /cart has no authGuard on purpose - the auth check happens here, at
+    // the moment of placing the order, not when landing on the page.
     if (!this.authStore.isAuthenticated()) {
       this.router.navigate(['/login']);
       return;
@@ -140,11 +129,6 @@ export class CartComponent {
       orderType: orderType as OrderType,
       deliveryAddress: deliveryAddress || undefined,
       notes: notes || undefined,
-      // Date -> ISO string: HttpClient JSON-serializes the payload, and a
-      // raw Date would just get silently stringified via .toString() by
-      // JSON.stringify's default behavior for Date is actually toISOString()
-      // already - but being explicit here documents the wire format and
-      // matches what the backend's @Type(() => Date) expects to parse.
       scheduledFor: scheduledFor ? scheduledFor.toISOString() : undefined,
       items: this.cartStore.items().map((item) => ({
         dishId: item.dishId,

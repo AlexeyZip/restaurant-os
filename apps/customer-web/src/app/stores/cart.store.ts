@@ -21,8 +21,7 @@ function loadPersistedItems(): CartItem[] {
     const raw = localStorage.getItem(CART_STORAGE_KEY);
     return raw ? (JSON.parse(raw) as CartItem[]) : [];
   } catch {
-    // Corrupted/unexpected JSON in localStorage - start fresh rather than
-    // crash the whole app on load.
+    // Corrupted localStorage - start fresh instead of crashing the app.
     return [];
   }
 }
@@ -87,7 +86,6 @@ export const CartStore = signalStore(
 
       try {
         await ordersApi.createOrder(payload);
-        // Order created server-side - nothing left to keep in the cart.
         patchState(store, { items: [], submitting: false });
       } catch (error: unknown) {
         const message =

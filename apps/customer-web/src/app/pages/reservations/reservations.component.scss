@@ -1,0 +1,139 @@
+:host {
+  display: block;
+}
+
+.reservations-page {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 32px;
+  align-items: start;
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.booking-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.booking-form__select {
+  padding: 12px;
+  border-radius: 4px;
+  border: 1px solid var(--mat-sys-outline);
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+}
+
+.booking-form__error-text {
+  margin: 0;
+  padding: 0 4px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--mat-sys-error);
+}
+
+.booking-form__hint {
+  padding: 0 4px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.reservations-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 64px 24px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+
+  &--error {
+    color: var(--mat-sys-error);
+  }
+}
+
+.reservations-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.reservation-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.reservation-card__table {
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+
+.reservation-card__time {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  color: var(--mat-sys-on-surface);
+}
+
+.reservation-card__details {
+  margin-top: auto;
+}
+
+.reservation-card__detail {
+  margin: 0 0 4px;
+  font-size: 0.8rem;
+  color: var(--mat-sys-on-surface-variant);
+
+  &--error {
+    color: var(--mat-sys-error);
+  }
+}
+
+// Same status palette as orders.component.scss's .status-badge.
+.status-badge {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background-color: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface-variant);
+
+  &--confirmed,
+  &--seated,
+  &--completed {
+    background-color: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  &--cancelled,
+  &--no_show {
+    background-color: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+  }
+}

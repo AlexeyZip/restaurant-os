@@ -110,13 +110,8 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  // Pushes the footer to the bottom of the card regardless of how much
-  // content is above it - our content is projected straight into
-  // ui-card's <mat-card-content>, which is already a column flexbox
-  // (flex: 1, so it fills the whole stretched card height - see
-  // card.component.scss). Without this, "Total" sits right after
-  // whatever content happens to be above it, landing at a different
-  // height on every card depending on how many detail lines it has.
+  // Pins the footer to the bottom of the card regardless of content length
+  // above it (ui-card's content area is a column flexbox with flex: 1).
   margin-top: auto;
   padding-top: 12px;
   border-top: 2px solid var(--mat-sys-outline-variant);

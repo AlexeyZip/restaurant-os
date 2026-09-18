@@ -18,22 +18,11 @@ import { MatTimepickerModule } from '@angular/material/timepicker';
 import { getControlErrorMessage } from '../forms/control-error-message';
 
 /**
- * Wrapper over `mat-datepicker` + `mat-timepicker` ("two in one"): shows a
- * date field and a time field side by side, but combines them into a single
- * `Date` value for the outside world via `ControlValueAccessor`.
- *
- * `provideNativeDateAdapter()` is registered here (component-level, not in
- * `app.config.ts`) so this component is self-contained - anything that
- * imports `ui-datetime-picker` gets a working date adapter for free, same
- * way `ui-input`/`ui-button` don't require any app-wide setup.
- *
- * Validation display mirrors ui-input's InputComponent exactly - same
- * NgControl self-injection + afterNextRender + formStateVersion trick, for
- * the same reason: mat-form-field only projects mat-error/mat-hint based on
- * its own internal `_control.errorState`, which is derived from the
- * NgControl on the *native* input - and since our real formControlName
- * lives on this wrapper, not on either inner <input>, that never lines up.
- * See input.component.html's comment for the full explanation.
+ * Wrapper over `mat-datepicker` + `mat-timepicker`: shows date and time
+ * fields side by side, combined into a single `Date` for the outside world
+ * via `ControlValueAccessor`. Validation display mirrors ui-input's
+ * InputComponent - see input.component.html's comment for why mat-error
+ * can't be used directly here.
  */
 @Component({
   selector: 'ui-datetime-picker',
@@ -58,11 +47,8 @@ export class DatetimePickerComponent implements ControlValueAccessor {
   /** Earliest selectable date (time part is ignored). */
   min = input<Date | null>(null);
 
-  // Signals, not plain fields - see the identical comment in
-  // ui-input's InputComponent for why this matters under OnPush:
-  // writeValue()/setDisabledState() are called externally by the Forms
-  // module, and a plain field mutated from outside an OnPush component
-  // doesn't trigger a re-render.
+  // Signals, not plain fields - see ui-input's InputComponent for why this
+  // matters under OnPush.
   protected readonly datePart = signal<Date | null>(null);
   protected readonly timePart = signal<Date | null>(null);
   protected readonly isDisabled = signal(false);

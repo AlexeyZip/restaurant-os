@@ -1,1 +1,137 @@
-<p>reservations works!</p>
+<div class="reservations-page">
+  <section class="booking">
+    <h2 class="section-title">Book a table</h2>
+
+    <ui-card>
+      <form class="booking-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <ui-input
+          label="Guests"
+          type="number"
+          formControlName="guestCount"
+        />
+
+        <div class="booking-form__field">
+          <select class="booking-form__select" formControlName="tableId">
+            <option value="" disabled selected>Select a table</option>
+            @for (table of availableTables(); track table.id) {
+              <option value="{{ table.id }}">
+                Table {{ table.number }} (seats {{ table.capacity }})
+              </option>
+            }
+          </select>
+
+          @if (
+            form.controls.tableId.invalid &&
+            (form.controls.tableId.touched || form.controls.tableId.dirty)
+          ) {
+            <p class="booking-form__error-text">Please select a table.</p>
+          } @else if (availableTables().length === 0) {
+            <span class="booking-form__hint"
+              >No tables available for this many guests.</span
+            >
+          }
+        </div>
+
+        <ui-datetime-picker
+          label="Date &amp; time"
+          [min]="minStartDate"
+          formControlName="startsAt"
+        />
+
+        <ui-input label="Notes" type="text" formControlName="notes" />
+
+        <ui-button type="submit" variant="primary" [loading]="submitting()"
+          >Book table</ui-button
+        >
+
+        @if (submitError()) {
+          <p class="booking-form__error-text">{{ submitError() }}</p>
+        }
+      </form>
+    </ui-card>
+  </section>
+
+  <section class="my-reservations">
+    <h2 class="section-title">Your reservations</h2>
+
+    @if (reservationsLoading()) {
+      <div class="reservations-state">
+        <p>Loading your reservations...</p>
+      </div>
+    } @else if (reservationsError()) {
+      <div class="reservations-state reservations-state--error">
+        <p>{{ reservationsError() }}</p>
+      </div>
+    } @else if (reservations().length === 0) {
+      <div class="reservations-state">
+        <p>You don't have any reservations yet.</p>
+      </div>
+    } @else {
+      <div class="reservations-list">
+        @for (reservation of reservations(); track reservation.id) {
+          <ui-card class="reservation-card">
+            <div class="reservation-card__header">
+              <span class="reservation-card__table">
+                Table {{ reservation.table?.number ?? reservation.tableId }}
+              </span>
+
+              <span
+                class="status-badge"
+                [class]="'status-badge--' + reservation.status.toLowerCase()"
+              >
+                @switch (reservation.status) {
+                  @case ('PENDING') {
+                    Pending
+                  }
+                  @case ('CONFIRMED') {
+                    Confirmed
+                  }
+                  @case ('SEATED') {
+                    Seated
+                  }
+                  @case ('COMPLETED') {
+                    Completed
+                  }
+                  @case ('NO_SHOW') {
+                    No-show
+                  }
+                  @case ('CANCELLED') {
+                    Cancelled
+                  }
+                }
+              </span>
+            </div>
+
+            <p class="reservation-card__time">
+              {{ reservation.startsAt | date: 'medium' }} →
+              {{ reservation.endsAt | date: 'shortTime' }}
+            </p>
+
+            <div class="reservation-card__details">
+              <p class="reservation-card__detail">
+                {{ reservation.guestCount }}
+                {{ reservation.guestCount === 1 ? 'guest' : 'guests' }}
+              </p>
+
+              @if (reservation.notes) {
+                <p class="reservation-card__detail">
+                  Notes: {{ reservation.notes }}
+                </p>
+              }
+
+              @if (
+                reservation.status === 'CANCELLED' && reservation.cancelReason
+              ) {
+                <p
+                  class="reservation-card__detail reservation-card__detail--error"
+                >
+                  Cancelled: {{ reservation.cancelReason }}
+                </p>
+              }
+            </div>
+          </ui-card>
+        }
+      </div>
+    }
+  </section>
+</div>

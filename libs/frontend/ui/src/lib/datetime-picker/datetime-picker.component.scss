@@ -16,8 +16,7 @@
   flex: 1 1 120px;
 }
 
-// Mirrors ui-input's .ui-input-error - same reasoning, see that
-// component's template comment for why this can't just be a <mat-error>.
+// Mirrors ui-input's .ui-input-error.
 .ui-datetime-picker-error {
   margin: 0;
   padding: 0 16px;
