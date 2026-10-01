@@ -1,13 +1,23 @@
 import { Component, inject, signal } from '@angular/core';
 import { MenuStore } from '../../stores/menu.store';
 import { OrdersApiService } from '../../services/orders-api.service';
-import { Order } from '../../models/order.model';
-import { CardComponent, MoneyPipe } from '@restaurant-os/ui';
+import { Order, OrderStatus } from '../../models/order.model';
+import { CardComponent, MoneyPipe, TooltipDirective } from '@restaurant-os/ui';
 import { DatePipe } from '@angular/common';
+
+const ORDER_STATUS_TOOLTIPS: Record<OrderStatus, string> = {
+  CREATED: 'Placed — waiting for the restaurant to confirm.',
+  CONFIRMED: 'Confirmed — the kitchen will start preparing it soon.',
+  IN_PROGRESS: 'Your food is being prepared right now.',
+  READY: 'Ready — waiting for pickup or the courier.',
+  OUT_FOR_DELIVERY: 'On its way to you.',
+  COMPLETED: 'Delivered or picked up. Order complete.',
+  CANCELLED: 'This order was cancelled.',
+};
 
 @Component({
   selector: 'app-orders',
-  imports: [CardComponent, MoneyPipe, DatePipe],
+  imports: [CardComponent, MoneyPipe, DatePipe, TooltipDirective],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.scss',
 })
@@ -33,5 +43,9 @@ export class OrdersComponent {
       .catch((error) => {
         this.error.set(error.message);
       });
+  }
+
+  statusTooltip(status: OrderStatus): string {
+    return ORDER_STATUS_TOOLTIPS[status];
   }
 }

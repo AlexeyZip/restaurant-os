@@ -78,6 +78,7 @@
               <span
                 class="status-badge"
                 [class]="'status-badge--' + reservation.status.toLowerCase()"
+                [uiTooltip]="statusTooltip(reservation.status)"
               >
                 @switch (reservation.status) {
                   @case ('PENDING') {

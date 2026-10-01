@@ -13,10 +13,12 @@ import {
   CardComponent,
   DatetimePickerComponent,
   InputComponent,
+  TooltipDirective,
 } from '@restaurant-os/ui';
 import {
   CreateReservationPayload,
   Reservation,
+  ReservationStatus,
 } from '../../models/reservation.model';
 import { Table } from '../../models/table.model';
 import { ReservationsApiService } from '../../services/reservations-api.service';
@@ -25,6 +27,15 @@ import { TablesApiService } from '../../services/tables-api.service';
 // Fixed duration for every booking - endsAt is always derived from startsAt
 // on submit. A duration picker is an easy follow-up if 2h ever isn't enough.
 const RESERVATION_DURATION_MS = 2 * 60 * 60 * 1000;
+
+const RESERVATION_STATUS_TOOLTIPS: Record<ReservationStatus, string> = {
+  PENDING: 'Waiting for the restaurant to confirm your table.',
+  CONFIRMED: "Your table is confirmed — see you then!",
+  SEATED: "You're currently seated at this table.",
+  COMPLETED: 'This reservation has been completed.',
+  NO_SHOW: "Marked as a no-show — the table wasn't used.",
+  CANCELLED: 'This reservation was cancelled.',
+};
 
 @Component({
   selector: 'app-reservations',
@@ -35,6 +46,7 @@ const RESERVATION_DURATION_MS = 2 * 60 * 60 * 1000;
     InputComponent,
     ButtonComponent,
     DatetimePickerComponent,
+    TooltipDirective,
   ],
   templateUrl: './reservations.component.html',
   styleUrl: './reservations.component.scss',
@@ -155,6 +167,10 @@ export class ReservationsComponent {
     } finally {
       this.submitting.set(false);
     }
+  }
+
+  statusTooltip(status: ReservationStatus): string {
+    return RESERVATION_STATUS_TOOLTIPS[status];
   }
 
   private extractErrorMessage(error: unknown): string {
