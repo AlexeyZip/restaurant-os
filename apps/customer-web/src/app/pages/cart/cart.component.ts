@@ -16,7 +16,7 @@ import {
 } from '@restaurant-os/ui';
 import { CartStore } from '../../stores/cart.store';
 import { MenuStore } from '../../stores/menu.store';
-import { AuthStore } from '../../stores/auth.store';
+import { AuthStore } from '@restaurant-os/auth-client';
 import { CreateOrderPayload, OrderType } from '../../models/order.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';

@@ -6,7 +6,7 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { ButtonComponent } from '@restaurant-os/ui';
-import { AuthStore } from './stores/auth.store';
+import { AuthStore } from '@restaurant-os/auth-client';
 import { MatIconModule } from '@angular/material/icon';
 import { CartStore } from './stores/cart.store';
 import { MatBadgeModule } from '@angular/material/badge';
