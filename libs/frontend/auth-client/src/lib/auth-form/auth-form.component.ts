@@ -13,7 +13,7 @@ export interface AuthFormValue {
 }
 
 @Component({
-  selector: 'app-auth-form',
+  selector: 'lib-auth-form',
   imports: [ReactiveFormsModule, InputComponent, ButtonComponent],
   templateUrl: './auth-form.component.html',
   styleUrl: './auth-form.component.scss',

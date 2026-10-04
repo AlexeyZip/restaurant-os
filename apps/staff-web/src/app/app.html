@@ -1,2 +1,16 @@
-<app-nx-welcome></app-nx-welcome>
-<router-outlet></router-outlet>
+<header class="app-header">
+  <div class="app-header__inner">
+    <span class="app-header__brand">Restaurant OS · Staff</span>
+
+    @if (isAuthenticated) {
+      <div class="app-header__auth">
+        <span class="app-header__email">{{ email }}</span>
+        <ui-button variant="secondary" (clicked)="onLogout()">Logout</ui-button>
+      </div>
+    }
+  </div>
+</header>
+
+<main class="app-content">
+  <router-outlet />
+</main>

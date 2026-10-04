@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { CreateOrderPayload, Order, OrderStatus } from '../models/order.model';
 import { Table } from '../models/table.model';
 
 @Injectable({ providedIn: 'root' })

@@ -17,7 +17,7 @@ import {
 import { CartStore } from '../../stores/cart.store';
 import { MenuStore } from '../../stores/menu.store';
 import { AuthStore } from '@restaurant-os/auth-client';
-import { CreateOrderPayload, OrderType } from '../../models/order.model';
+import { CreateOrderPayload, OrderType } from '@restaurant-os/orders-client';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
@@ -122,8 +122,7 @@ export class CartComponent {
     // form.value only includes ENABLED controls - deliveryAddress is
     // omitted entirely for TAKEAWAY, scheduledFor is omitted entirely when
     // asap is checked. That's exactly the shape the backend expects.
-    const { orderType, deliveryAddress, notes, scheduledFor } =
-      this.form.value;
+    const { orderType, deliveryAddress, notes, scheduledFor } = this.form.value;
 
     const payload: CreateOrderPayload = {
       orderType: orderType as OrderType,

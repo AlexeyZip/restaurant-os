@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { CreateOrderPayload, Order, OrderStatus } from '../models/order.model';
+import { CreateOrderPayload, Order, OrderStatus } from './order.model';
 
 @Injectable({ providedIn: 'root' })
 export class OrdersApiService {

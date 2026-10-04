@@ -1,0 +1,79 @@
+<div class="toolbar">
+  <span class="live-indicator" [class.live-indicator--offline]="!live()">
+    {{ live() ? 'Live' : 'Offline — live updates paused' }}
+  </span>
+</div>
+
+@if (loading()) {
+  <div class="kitchen-state">
+    <p>Loading orders...</p>
+  </div>
+} @else if (error()) {
+  <div class="kitchen-state kitchen-state--error">
+    <p>{{ error() }}</p>
+    <ui-button variant="secondary" (clicked)="loadOrders()">Retry</ui-button>
+  </div>
+} @else if (isEmpty()) {
+  <div class="kitchen-state">
+    <p>No active orders. New orders will appear here automatically.</p>
+  </div>
+} @else {
+  @if (actionError()) {
+    <div class="kitchen-banner">{{ actionError() }}</div>
+  }
+
+  <div class="board">
+    @for (column of columns(); track column.status) {
+      <section class="column">
+        <h2 class="column__title">
+          {{ column.title }}
+          <span class="column__count">{{ column.items.length }}</span>
+        </h2>
+
+        <div class="column__list">
+          @for (item of column.items; track item.order.id) {
+            <ui-card>
+              <div class="ticket__header">
+                <span class="ticket__id">#{{ shortId(item.order) }}</span>
+                <span class="ticket__meta">
+                  {{ item.order.orderType === 'DELIVERY' ? 'Delivery' : 'Takeaway' }}
+                  · {{ item.order.createdAt | date: 'shortTime' }}
+                </span>
+              </div>
+
+              <ul class="ticket__items">
+                @for (line of item.order.items; track line.id) {
+                  <li>
+                    <strong>{{ line.quantity }}×</strong> {{ line.dishName }}
+                  </li>
+                }
+              </ul>
+
+              @if (item.order.scheduledFor) {
+                <p class="ticket__note">
+                  Scheduled: {{ item.order.scheduledFor | date: 'short' }}
+                </p>
+              }
+              @if (item.order.notes) {
+                <p class="ticket__note ticket__note--notes">
+                  Notes: {{ item.order.notes }}
+                </p>
+              }
+
+              @if (item.action; as action) {
+                <div class="ticket__actions">
+                  <ui-button
+                    [loading]="pendingIds().has(item.order.id)"
+                    (clicked)="advance(item.order, action)"
+                  >
+                    {{ action.label }}
+                  </ui-button>
+                </div>
+              }
+            </ui-card>
+          }
+        </div>
+      </section>
+    }
+  </div>
+}

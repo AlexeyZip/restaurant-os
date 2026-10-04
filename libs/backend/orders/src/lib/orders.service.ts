@@ -3,12 +3,14 @@ import { PrismaService } from '@restaurant-os/database';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { KitchenGateway } from '@restaurant-os/kitchen';
+import { OrderGateway } from './order.gateway';
 
 @Injectable()
 export class OrderService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly kitchenGateway: KitchenGateway,
+    private readonly orderGateway: OrderGateway,
   ) {}
 
   async createOrder(userId: string, dto: CreateOrderDto) {
@@ -27,7 +29,7 @@ export class OrderService {
         quantity: item.quantity,
       });
     }
-    return this.prisma.order.create({
+    const order = await this.prisma.order.create({
       data: {
         userId,
         orderType: dto.orderType,
@@ -43,13 +45,16 @@ export class OrderService {
         items: true,
       },
     });
+    this.kitchenGateway.emitOrderCreated({ id: order.id });
+
+    return order;
   }
 
   async getOrders(userId: string, roles: string[]) {
-    const isAdmin = roles.includes('ADMIN');
+    const canSeeAllOrders = roles.some((r) => r === 'ADMIN' || r === 'KITCHEN');
 
     return this.prisma.order.findMany({
-      where: isAdmin ? {} : { userId },
+      where: canSeeAllOrders ? {} : { userId },
       include: {
         items: true,
       },
@@ -87,6 +92,11 @@ export class OrderService {
     this.kitchenGateway.emitOrderStatusChanged({
       id: updated.id,
       status: updated.status,
+    });
+    this.orderGateway.emitStatusChangedToOwner(updated.userId, {
+      id: updated.id,
+      status: updated.status,
+      cancelReason: updated.cancelReason,
     });
 
     return updated;

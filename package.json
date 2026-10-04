@@ -5,6 +5,7 @@
   "scripts": {
     "dev:be": "npx nx serve api",
     "dev:fe": "npx nx serve customer-web",
+    "dev:fe-sw": "npx nx serve staff-web",
     "db:seed": "npx prisma db seed"
   },
   "private": true,

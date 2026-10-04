@@ -61,3 +61,12 @@ when relevant, or can be invoked explicitly in chat as `/bug-fix` and
 
 For a feature big enough to have real design decisions, write a short spec in
 `specs/` first — see `specs/README.md`.
+
+## Learning track
+
+This project doubles as a Node.js/backend learning exercise — see
+`docs/learning/nodejs-fullstack-roadmap.md` for the topic checklist. When the
+user is explicitly learning/practicing a fundamentals topic (not shipping a
+feature), use `.cursor/skills/node-mentor/` (`/node-mentor`): explain the
+problem, give direction and a leading question, hint if stuck, and only show
+the full solution if asked — then explain why it works.

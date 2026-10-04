@@ -6,9 +6,16 @@ import { AuthStore } from './auth.store';
  * Factory, not a plain guard: Angular's `canActivate` only accepts
  * `CanActivateFn` (token, no arguments), so the required roles have to be
  * bound via a closure at route-definition time, e.g.
- * `canActivate: [roleGuard('ADMIN')]`.
+ * `canActivate: [roleGuard(['ADMIN'], '/forbidden')]`.
+ *
+ * `forbiddenUrl` must NOT itself be guarded by (or redirect into) a route
+ * that uses this guard, otherwise a logged-in user with the wrong role
+ * bounces between the two forever.
  */
-export function roleGuard(...allowedRoles: string[]): CanActivateFn {
+export function roleGuard(
+  allowedRoles: string[],
+  forbiddenUrl = '/',
+): CanActivateFn {
   return () => {
     const authStore = inject(AuthStore);
     const router = inject(Router);
@@ -18,9 +25,7 @@ export function roleGuard(...allowedRoles: string[]): CanActivateFn {
     }
 
     if (!allowedRoles.some((role) => authStore.hasRole(role))) {
-      // Authenticated, just not allowed here - back to a safe page rather
-      // than a dead end or a confusing re-prompt for login.
-      return router.createUrlTree(['/']);
+      return router.createUrlTree([forbiddenUrl]);
     }
 
     return true;

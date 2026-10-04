@@ -11,8 +11,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MenuStore } from './menu.store';
 import { Dish } from '../models/menu.model';
 import { CartItem, CartState } from '../models/cart.model';
-import { CreateOrderPayload } from '../models/order.model';
-import { OrdersApiService } from '../services/orders-api.service';
+import {
+  CreateOrderPayload,
+  OrdersApiService,
+} from '@restaurant-os/orders-client';
 
 const CART_STORAGE_KEY = 'cart';
 

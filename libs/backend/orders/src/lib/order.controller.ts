@@ -43,7 +43,7 @@ export class OrderController {
   }
 
   @Patch(':id/status')
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'KITCHEN')
   @UseGuards(JwtAuthGuard, RolesGuard)
   updateOrderStatus(
     @Param('id') id: string,

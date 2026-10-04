@@ -28,7 +28,12 @@
       "@restaurant-os/kitchen": ["./libs/backend/kitchen/src/index.ts"],
       "@restaurant-os/ui": ["./libs/frontend/ui/src/index.ts"],
       "@restaurant-os/shared/util": ["./libs/shared/util/src/index.ts"],
-      "@restaurant-os/auth-client": ["./libs/frontend/auth-client/src/index.ts"]
+      "@restaurant-os/auth-client": [
+        "./libs/frontend/auth-client/src/index.ts"
+      ],
+      "@restaurant-os/orders-client": [
+        "./libs/frontend/orders-client/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

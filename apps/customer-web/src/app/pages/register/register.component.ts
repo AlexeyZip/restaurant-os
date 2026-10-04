@@ -1,10 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthStore } from '@restaurant-os/auth-client';
 import {
   AuthFormComponent,
   AuthFormValue,
-} from '../../components/auth-form/auth-form.component';
+  AuthStore,
+} from '@restaurant-os/auth-client';
 
 @Component({
   selector: 'app-register',
