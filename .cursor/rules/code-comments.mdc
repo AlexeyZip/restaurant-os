@@ -1,0 +1,29 @@
+---
+description: Comment policy - keep only comments that explain non-obvious "why"
+alwaysApply: true
+---
+
+# Code comments
+
+Default to no comment. Add one only when the code can't explain itself:
+
+- A non-obvious workaround or gotcha (a library quirk, a race-condition fix)
+- A deliberate decision that looks wrong at first glance (e.g. "no authGuard
+  here on purpose")
+- A contract/invariant that's easy to violate by accident
+
+Don't write a comment that just restates the line below it, explains basic
+language/framework mechanics, or narrates what's about to happen. Delete a
+comment like that instead of keeping it "for documentation."
+
+```ts
+// ❌ restates the code
+// Set loading to true
+this.loading.set(true);
+
+// ✅ explains non-obvious "why"
+// Signals, not plain fields: writeValue() is called externally by the Forms
+// module, and under OnPush a plain field mutated from outside never
+// triggers a re-render.
+protected readonly value = signal('');
+```

@@ -1,0 +1,22 @@
+---
+description: Commit message format for this repo
+alwaysApply: true
+---
+
+# Commit messages
+
+Format: `type: short imperative summary`, lowercase after the colon, no
+trailing period.
+
+Types: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`.
+
+```
+feat: add role-based route guard
+fix: prevent duplicate refresh-token insert on concurrent requests
+refactor: extract auth into shared auth-client lib
+```
+
+- One commit per logical change — don't bundle an unrelated fix into a
+  feature commit.
+- An optional body (bullet list) explains *why*, not a line-by-line diff recap.
+- Write it like a human engineer would; don't mention AI tooling in the message.

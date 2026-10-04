@@ -1,0 +1,25 @@
+---
+description: Angular conventions for customer-web, staff-web, and frontend libs
+globs: apps/customer-web/**/*.ts,apps/staff-web/**/*.ts,libs/frontend/**/*.ts
+alwaysApply: false
+---
+
+# Angular conventions
+
+- Standalone components only, no NgModules. New control flow (`@if`/`@for`/`@switch`),
+  not `*ngIf`/`*ngFor`.
+- `input()`/`output()` signal APIs, not `@Input()`/`@Output()` decorators.
+- Never use the non-null assertion operator (`!`). Narrow with an explicit guard instead.
+- Under `OnPush` (every `libs/frontend/ui` component), state written from
+  *outside* the component — `writeValue()`, `setDisabledState()`, a sibling
+  FormControl's `valueChanges` — must be a `signal`, not a plain field; a
+  plain field mutated externally doesn't trigger a re-render.
+- Custom `ControlValueAccessor` components that need to show validation
+  errors: self-inject `NgControl` (`inject(NgControl, { optional: true, self: true })`),
+  don't register a separate `NG_VALUE_ACCESSOR` provider (circular-dep
+  footgun). See `libs/frontend/ui/src/lib/input/input.component.ts` as the
+  reference implementation.
+- Unsubscribe via `takeUntilDestroyed()`, not manual `Subscription` bookkeeping.
+- Shared UI goes in `libs/frontend/ui` (`ui-*` selectors); shared auth
+  state/guards go in `libs/frontend/auth-client`. Don't duplicate either into
+  a single app.

@@ -1,0 +1,24 @@
+---
+description: Nx workspace layout and module boundary tags
+globs: **/project.json
+alwaysApply: false
+---
+
+# Nx libs & boundaries
+
+Every app/lib is tagged in `project.json`, enforced by
+`@nx/enforce-module-boundaries` in `eslint.config.mjs`:
+
+- `scope:customer` / `scope:staff` / `scope:api` — apps can only depend on
+  their own scope plus `scope:shared`.
+- `scope:shared` — libs usable from any app (`libs/frontend/ui`,
+  `libs/frontend/auth-client`, `libs/shared/util`).
+- `type:ui` — UI-only libs can only depend on other `type:ui`/`type:util` libs.
+
+When adding a new shared frontend lib: generate it under
+`libs/frontend/<name>` (e.g. `npx nx g @nx/angular:library ...`), tag it
+`["scope:shared", "type:<ui|util|data-access>"]`, and confirm its path landed
+in `tsconfig.base.json` (the generator does this automatically).
+
+Backend feature modules live in `libs/backend/<name>` and are wired into
+`apps/api` via `@restaurant-os/<name>`.

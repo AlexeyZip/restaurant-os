@@ -1,0 +1,23 @@
+---
+description: NestJS/backend conventions for apps/api and libs/backend
+globs: apps/api/**/*.ts,libs/backend/**/*.ts
+alwaysApply: false
+---
+
+# NestJS conventions
+
+- Validate every request body with a `class-validator` DTO. The global
+  `ValidationPipe` uses `whitelist: true` but **not** `transform: true` — so
+  numeric/date fields must already be the right type (use `@Type(() => Date)`
+  from `class-transformer` for dates); don't rely on implicit string→number
+  coercion.
+- Protect admin-only routes with `@Roles('ADMIN')` +
+  `@UseGuards(JwtAuthGuard, RolesGuard)` (see
+  `libs/backend/orders/src/lib/order.controller.ts`).
+- Money is always an integer in minor currency units, never a float — see
+  `Dish.basicPrice`'s doc comment in `prisma/schema.prisma`.
+- Read-then-write on a shared row (tokens, seat availability, stock) is a race
+  condition waiting to happen — use an atomic `updateMany` with the
+  precondition in the `WHERE` clause instead (see `AuthService.refresh()`).
+- New backend features live in their own `libs/backend/<name>` lib (module +
+  controller + service + dto), wired into `apps/api/src/app/app.module.ts`.
