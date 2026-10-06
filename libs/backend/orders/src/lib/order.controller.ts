@@ -38,8 +38,11 @@ export class OrderController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  getOrderById(@Param('id') id: string) {
-    return this.orderService.getOrderById(id);
+  getOrderById(
+    @Param('id') id: string,
+    @CurrentUser() user: { userId: string; roles: string[] },
+  ) {
+    return this.orderService.getOrderById(id, user.userId, user.roles);
   }
 
   @Patch(':id/status')

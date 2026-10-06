@@ -70,6 +70,12 @@ export class AuthService {
   async refresh(
     token: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
+    // Prisma treats `where: { token: undefined }` as "no filter", so a request
+    // without the cookie would otherwise match (and burn) every user's token.
+    if (!token) {
+      throw new UnauthorizedException('Missing refresh token');
+    }
+
     // Atomic claim-and-invalidate: the `used: false` check lives in the
     // WHERE clause itself, not in a separate read beforehand. Postgres
     // guarantees only one concurrent UPDATE can match a given row, so if
@@ -102,7 +108,13 @@ export class AuthService {
     return this.generateTokens(user.id, user.email, roleNames);
   }
 
-  async logout(token: string): Promise<void> {
+  async logout(token: string | undefined): Promise<void> {
+    // Same undefined-means-no-filter trap as in refresh(): nothing to
+    // invalidate without a cookie, and it must never touch other users.
+    if (!token) {
+      return;
+    }
+
     await this.prisma.refreshToken.updateMany({
       where: { token },
       data: { used: true },
@@ -123,14 +135,20 @@ export class AuthService {
     // random jti makes every signature unique regardless of timing, on
     // top of the atomic claim in refresh() above (defense in depth: two
     // independent fixes for the same underlying race).
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '15m',
-      jwtid: randomUUID(),
-    });
-    const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: '30d',
-      jwtid: randomUUID(),
-    });
+    const accessToken = this.jwtService.sign(
+      { ...payload, type: 'access' },
+      {
+        expiresIn: '15m',
+        jwtid: randomUUID(),
+      },
+    );
+    const refreshToken = this.jwtService.sign(
+      { ...payload, type: 'refresh' },
+      {
+        expiresIn: '30d',
+        jwtid: randomUUID(),
+      },
+    );
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);

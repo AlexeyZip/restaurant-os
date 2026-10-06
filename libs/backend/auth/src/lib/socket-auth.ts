@@ -35,6 +35,10 @@ export function socketAuthMiddleware(
       return next(new Error('unauthorized'));
     }
 
+    if (payload.type !== 'access') {
+      return next(new Error('unauthorized'));
+    }
+
     if (
       allowedRoles &&
       !payload.roles.some((role) => allowedRoles.includes(role))

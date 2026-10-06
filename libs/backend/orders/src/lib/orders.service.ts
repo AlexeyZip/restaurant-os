@@ -50,11 +50,13 @@ export class OrderService {
     return order;
   }
 
-  async getOrders(userId: string, roles: string[]) {
-    const canSeeAllOrders = roles.some((r) => r === 'ADMIN' || r === 'KITCHEN');
+  private canSeeAllOrders(roles: string[]): boolean {
+    return roles.some((role) => role === 'ADMIN' || role === 'KITCHEN');
+  }
 
+  async getOrders(userId: string, roles: string[]) {
     return this.prisma.order.findMany({
-      where: canSeeAllOrders ? {} : { userId },
+      where: this.canSeeAllOrders(roles) ? {} : { userId },
       include: {
         items: true,
       },
@@ -64,14 +66,17 @@ export class OrderService {
     });
   }
 
-  async getOrderById(id: string) {
+  async getOrderById(id: string, userId: string, roles: string[]) {
     const order = await this.prisma.order.findUnique({
       where: { id },
       include: {
         items: true,
       },
     });
-    if (!order) {
+
+    // Someone else's order gets the same 404 as a missing one, so the
+    // endpoint cannot be used to find out which order ids exist.
+    if (!order || (order.userId !== userId && !this.canSeeAllOrders(roles))) {
       throw new NotFoundException(`Order ${id} not found`);
     }
 

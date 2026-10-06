@@ -62,9 +62,16 @@ export const AuthStore = signalStore(
           patchState(store, { loading: false, error: null });
         } catch (error: unknown) {
           if (error instanceof HttpErrorResponse) {
+            // Nest sends a string for most errors but an array of strings
+            // when request validation fails (one entry per broken rule).
+            const message: unknown = error.error?.message;
             patchState(store, {
               loading: false,
-              error: error.error.message,
+              error: Array.isArray(message)
+                ? message.join('. ')
+                : typeof message === 'string'
+                  ? message
+                  : 'Registration failed',
             });
           } else {
             patchState(store, {
@@ -74,18 +81,31 @@ export const AuthStore = signalStore(
           }
         }
       },
-      async refreshToken() {
+      // Resolves to true when a new access token was obtained. The interceptor
+      // relies on this to decide between "retry the request" and "log out".
+      async refreshToken(): Promise<boolean> {
         try {
           patchState(store, { loading: true, error: null });
           const response = await authApi.refreshToken();
           applyAccessToken(response.accessToken);
           patchState(store, { loading: false, error: null });
+          return true;
         } catch {
           patchState(store, { loading: false });
+          return false;
         }
       },
-      logout() {
+      async logout() {
+        // Clear local state first so the UI reacts immediately, then tell the
+        // server to invalidate the refresh token and drop its cookie. Without
+        // this call the cookie survives and the app initializer would simply
+        // log the user back in on the next page load.
         patchState(store, initialState);
+        try {
+          await authApi.logout();
+        } catch {
+          // Offline or already expired: local logout has still happened.
+        }
       },
       isAuthenticated() {
         return !!store.accessToken();

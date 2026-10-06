@@ -1,20 +1,22 @@
 import { Controller, Post, Body, Res, Req, HttpCode } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  register(@Body() body: { email: string; password: string }) {
+  register(@Body() body: RegisterDto) {
     return this.authService.register(body.email, body.password);
   }
 
   @Post('login')
   @HttpCode(200)
   async login(
-    @Body() body: { email: string; password: string },
+    @Body() body: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     const tokens = await this.authService.login(body.email, body.password);
